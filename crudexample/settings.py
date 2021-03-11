@@ -40,7 +40,19 @@ INSTALLED_APPS = [
     'employee',
     'rest_framework',
     'django_filters',
+    'sequences.apps.SequencesConfig',
+    'knox',
 ]
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        # 'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        'knox.auth.TokenAuthentication',
+        'rest_framework.permissions.AllowAny',
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+    ]
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -71,6 +83,14 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'crudexample.wsgi.application'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+    )
+}
+
 
 
 # Database

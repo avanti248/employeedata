@@ -19,6 +19,7 @@ class Migration(migrations.Migration):
                 ('ename', models.CharField(max_length=100)),
                 ('eemail', models.EmailField(max_length=254)),
                 ('econtact', models.CharField(max_length=15)),
+
             ],
             options={
                 'db_table': 'employee',

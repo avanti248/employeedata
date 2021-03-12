@@ -44,21 +44,16 @@ from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
 from employee.models import Employee
-from employee.serializers import EmployeeSerializer
+from employee.serializers import RegistrationSerializer,LoginSerializer,UserSerializer,EmployeeSerializer
+from django.views import View
+from employee.serializers import *
+from employee.models import *
+from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from employee.serializers import RegistrationSerializer,LoginSerializer,UserSerializer
-from django.contrib.auth import login
-from knox.models import AuthToken
-from rest_framework import generics, permissions
-from rest_framework import permissions
-from rest_framework.authtoken.serializers import AuthTokenSerializer
-from knox.views import LoginView as KnoxLoginView
-from rest_framework.decorators import api_view
-# Create your views here.
-from django.contrib.auth.models import User
-import json
+from rest_framework import status
 
+from rest_framework.decorators import api_view
+from django.contrib.auth.models import User
 
 @api_view(['GET', 'POST', 'DELETE'])
 def employee_list(request):
@@ -171,14 +166,32 @@ def login_view(request):
             data['response'] = 'You have entered an invalid username or password'
         return Response(data)
 
-# @api_view(['POST', ])
-# def usercreate(request):
-#     data = request.data
-#     username = data.get('username')
-#     password = data.get('password')
-#  #   password2 = self.validated_data['password2']
-#     user = User.objects.create_user(username, password)
-#     user.username = username
-#     user.set_password(password)
-#     user.save()
-#     return Response(user)
+@api_view(['POST', ])
+def usercreate(request):
+    data = request.data
+    username = data.get('username')
+    password = data.get('password')
+ #   password2 = self.validated_data['password2']
+    user = User.objects.create_user(username, password)
+    user.username = username
+    user.set_password(password)
+    user.save()
+    return Response(user)
+
+@api_view(['GET', 'POST',])
+def EmployeeRecordView(request):
+    """
+    A class based view for creating and fetching employee records
+    """
+    if request.method == 'GET':
+        employee = Employee.objects.all()
+        serializer = EmployeeSerializer(employee, many=True)
+        return Response(serializer.data)
+
+    if request.method == 'POST':
+        serializer = EmployeeSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=ValueError):
+            serializer.create(validated_data=request.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.error_messages,
+                        status=status.HTTP_400_BAD_REQUEST)
